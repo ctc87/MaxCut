@@ -62,7 +62,7 @@ public class Grasp2 {
 			
 		}
 		
-				
+		System.out.println("Fichero leído y parseado");
 		
 		this.setK(k);
 		this.setRcl_size(this.getN_nodes()/3);
@@ -74,8 +74,13 @@ public class Grasp2 {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getK(); i++) {
+			System.out.println("Iteración: " + i);
 			actual_solution = construct();
+			System.out.println("Solución construida");
 			actual_solution = localsearch(actual_solution);
+			System.out.println("Búsqueda local realizada");
+			System.out.println(function(actual_solution));
+			System.out.println(function(best_solution));
 			if(function(actual_solution) > function(best_solution)) {
 				best_solution = new ArrayList<Integer>(actual_solution);
 				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
@@ -113,11 +118,11 @@ public class Grasp2 {
 	
 	public int function(ArrayList<Integer> sol) {
 		int sum = 0;
-		for(int i = 0; i < this.getN_nodes(); i++) {
+		for(int i = 0; i < sol.size(); i++) {
 			for(int j = 0; j < this.getN_nodes(); j++) {
 				if(!sol.contains(j)) {
-					if(weight.get(i).get(j) != null) {
-						sum += weight.get(i).get(j);
+					if(weight.get(sol.get(i)).get(j) != null) {
+						sum += weight.get(sol.get(i)).get(j);
 					}
 				}
 			}

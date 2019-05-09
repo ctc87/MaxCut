@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Grasp {
+public class Grasp2 {
 	
 	ArrayList<ArrayList<Integer>> weight = new ArrayList<ArrayList<Integer>>();
 	ArrayList<Integer> rcl = new ArrayList<Integer>();
@@ -22,18 +22,16 @@ public class Grasp {
 	private int k;
 	private int rcl_size;
 	private int sol_size;
-	
-
-	
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp g = new Grasp("set1/prueba.rud",100);
-		g.execute();
+		Grasp2 g = new Grasp2("set1/g3.rud",100);
+		ArrayList<Integer> solution = g.execute();
+		System.out.println(solution);
 		
 	}
 	
-	public Grasp(String filename, int k) throws IOException {
+	public Grasp2(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String w = "";
 		String[] token;
@@ -64,7 +62,7 @@ public class Grasp {
 			
 		}
 		
-		rclmap = sortMapByValues(rclmap);		
+				
 		
 		this.setK(k);
 		this.setRcl_size(this.getN_nodes()/3);
@@ -72,44 +70,67 @@ public class Grasp {
 
 	}
 	
-	public void execute() {
+	public ArrayList<Integer> execute() {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getK(); i++) {
 			actual_solution = construct();
-			//actual_solution = localsearch(actual_solution);
+			actual_solution = localsearch(actual_solution);
+			if(function(actual_solution) > function(best_solution)) {
+				best_solution = new ArrayList<Integer>(actual_solution);
+				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
+			}
+			
 		}
+		
+		return best_solution;
 	}
 	
 	public ArrayList<Integer> construct(){
-		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
-		ArrayList<Integer> solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			solution.add(0);
-		}
+		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getRcl_size());
+		ArrayList<Integer> solution = new ArrayList<Integer>(this.getSol_size());
 		for(int i = 0; i < this.getSol_size(); i++) {
+			evaluate_rcl(solution);
 			rcl = make_rcl();
-			System.out.println("CANDIDATOS \t" + rcl);
-			System.out.println("SOLUTION \t" + solution);
+			//System.out.println("CANDIDATOS \t" + rcl);
+			//System.out.println("SOLUTION \t" + solution);
 			int numero;
+			Boolean is_in = false;
 			do{
+				is_in = false;
 				numero = get_random_index(rcl);
-			}while(solution.get(numero) == 1);
-			solution.set(numero, 1);
+				for(int j = 0; j < solution.size(); j++) {
+					if(solution.get(j) == rcl.get(numero)) {
+						is_in = true;
+					}
+				}
+			}while(is_in);
+			solution.add(rcl.get(numero));
 			
 		}
 		return solution;
 	}
 	
+	public int function(ArrayList<Integer> sol) {
+		int sum = 0;
+		for(int i = 0; i < this.getN_nodes(); i++) {
+			for(int j = 0; j < this.getN_nodes(); j++) {
+				if(!sol.contains(j)) {
+					if(weight.get(i).get(j) != null) {
+						sum += weight.get(i).get(j);
+					}
+				}
+			}
+		}
+		return sum;
+	}
+	
 	public ArrayList<Integer> make_rcl(){
 		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			rcl.add(0);
-		}
 		int count = 0;
 		for (Map.Entry<Integer, Integer> entry : rclmap.entrySet()) {
 			if(count < this.getRcl_size()) {
-				rcl.set(entry.getKey(), 1);
+				rcl.add(entry.getKey());
 				count++;
 			}else {
 				break;
@@ -119,21 +140,34 @@ public class Grasp {
 		
 	}
 	
-	public void evaluate_rcl(){
+	public void evaluate_rcl(ArrayList<Integer> solution){
 		for(int i = 0; i < this.getN_nodes(); i++) {
-			
+			int sum = 0;
+			for(int j = 0; j < this.getN_nodes(); j++) {
+				Boolean is_in_solution = false;
+				for(int k = 0; k < solution.size(); k++) {
+					if(solution.get(k) == j) {
+						is_in_solution = true;
+					}
+				}
+				if(!is_in_solution) {
+					if(weight.get(i).get(j) != null) {
+						sum += weight.get(i).get(j);
+					}
+				}
+			}
+			rclmap.put(i, sum);
 		}
+		rclmap = sortMapByValues(rclmap);
 	}
 	
 	public int get_random_index(ArrayList<Integer> rcl) {
 		int numero;
-		do {
-			numero = (int) (Math.random() * this.getN_nodes() - 1) + 1;
-		}while(rcl.get(numero) != 1);
+		numero = (int) (Math.random() * this.getRcl_size() - 1) + 1;
 		return numero;
 	}
 	
-private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
+	private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
         
         Set<Entry<Integer,Integer>> mapEntries = aMap.entrySet();
         
@@ -166,18 +200,43 @@ private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap)
         
     }
 	
-	public ArrayList<Integer> neighbourhoodsearch(){
-		ArrayList<Integer> solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
-		}
-		return solution;
-	}
-	
 	public ArrayList<Integer> localsearch(ArrayList<Integer> solution){
-		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
+		ArrayList<Integer> best_solution;
+		ArrayList<ArrayList<Integer>> neighbour = new ArrayList<ArrayList<Integer>>();
+		best_solution = new ArrayList<Integer>(solution);
+		neighbour.add(new ArrayList<Integer>(solution));
+		for(int i = 0; i < this.getSol_size(); i++) {
+			ArrayList<Integer> aux = new ArrayList<Integer>(solution);
+			if(!(aux.get(i) - 1 < 0)){				
+				if(!aux.contains(aux.get(i) - 1)) {
+					aux.set(i, aux.get(i) - 1);
+					if(!neighbour.contains(aux)) {
+						neighbour.add(new ArrayList<Integer>(aux));
+						aux.set(i, aux.get(i) + 1);
+					}
+				}
+			}
+			if(!(aux.get(i) + 1 > this.getSol_size() - 1)){
+				if(!aux.contains(aux.get(i) + 1)) {
+					aux.set(i, aux.get(i) + 1);
+					if(!neighbour.contains(aux)) {
+						neighbour.add(new ArrayList<Integer>(aux));
+						aux.set(i, aux.get(i) - 1);
+					}
+				}
+			}
+			
 		}
-		return solution;
+		
+		int max = 0;
+		for(int i = 0; i < neighbour.size(); i++) {
+			if(function(neighbour.get(i)) > max) {
+				max = function(neighbour.get(i));
+				best_solution = new ArrayList<Integer>(neighbour.get(i));
+			}
+		}
+		
+		return best_solution;
 	}
 
 	public int getN_nodes() {

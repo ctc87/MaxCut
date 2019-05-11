@@ -25,7 +25,7 @@ public class Grasp2 {
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp2 g = new Grasp2("set1/g3.rud",100);
+		Grasp2 g = new Grasp2("set1/g3.rud",10);
 		ArrayList<Integer> solution = g.execute();
 		System.out.println(solution);
 		
@@ -61,7 +61,6 @@ public class Grasp2 {
 			
 			
 		}
-		
 		System.out.println("Fichero leído y parseado");
 		
 		this.setK(k);
@@ -95,8 +94,8 @@ public class Grasp2 {
 		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getRcl_size());
 		ArrayList<Integer> solution = new ArrayList<Integer>(this.getSol_size());
 		for(int i = 0; i < this.getSol_size(); i++) {
-			evaluate_rcl(solution);
-			rcl = make_rcl();
+			evaluate_rcl();
+			rcl = make_rcl(solution);
 			//System.out.println("CANDIDATOS \t" + rcl);
 			//System.out.println("SOLUTION \t" + solution);
 			int numero;
@@ -117,6 +116,9 @@ public class Grasp2 {
 	}
 	
 	public int function(ArrayList<Integer> sol) {
+		if(sol.size() == 0) {
+			return -99999999;
+		}
 		int sum = 0;
 		for(int i = 0; i < sol.size(); i++) {
 			for(int j = 0; j < this.getN_nodes(); j++) {
@@ -130,36 +132,31 @@ public class Grasp2 {
 		return sum;
 	}
 	
-	public ArrayList<Integer> make_rcl(){
+	public ArrayList<Integer> make_rcl(ArrayList<Integer> solution){
 		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
 		int count = 0;
 		for (Map.Entry<Integer, Integer> entry : rclmap.entrySet()) {
-			if(count < this.getRcl_size()) {
-				rcl.add(entry.getKey());
-				count++;
-			}else {
-				break;
+			if(!solution.contains(entry.getKey())) {
+				if(count < this.getRcl_size()) {
+					rcl.add(entry.getKey());
+					count++;
+				}else {
+					break;
+				}
 			}
 		}
 		return rcl;
 		
 	}
 	
-	public void evaluate_rcl(ArrayList<Integer> solution){
+	public void evaluate_rcl(){
 		for(int i = 0; i < this.getN_nodes(); i++) {
 			int sum = 0;
 			for(int j = 0; j < this.getN_nodes(); j++) {
-				Boolean is_in_solution = false;
-				for(int k = 0; k < solution.size(); k++) {
-					if(solution.get(k) == j) {
-						is_in_solution = true;
-					}
+				if(weight.get(i).get(j) != null) {
+					sum += weight.get(i).get(j);
 				}
-				if(!is_in_solution) {
-					if(weight.get(i).get(j) != null) {
-						sum += weight.get(i).get(j);
-					}
-				}
+				
 			}
 			rclmap.put(i, sum);
 		}
@@ -188,7 +185,7 @@ public class Grasp2 {
             public int compare(Entry<Integer, Integer> ele1,
                     Entry<Integer, Integer> ele2) {
                 
-                return ele1.getValue().compareTo(ele2.getValue());
+                return ele2.getValue().compareTo(ele1.getValue());
             }
         });
         
@@ -217,8 +214,9 @@ public class Grasp2 {
 					aux.set(i, aux.get(i) - 1);
 					if(!neighbour.contains(aux)) {
 						neighbour.add(new ArrayList<Integer>(aux));
-						aux.set(i, aux.get(i) + 1);
+						
 					}
+					aux.set(i, aux.get(i) + 1);
 				}
 			}
 			if(!(aux.get(i) + 1 > this.getSol_size() - 1)){
@@ -226,8 +224,9 @@ public class Grasp2 {
 					aux.set(i, aux.get(i) + 1);
 					if(!neighbour.contains(aux)) {
 						neighbour.add(new ArrayList<Integer>(aux));
-						aux.set(i, aux.get(i) - 1);
+						
 					}
+					aux.set(i, aux.get(i) - 1);
 				}
 			}
 			

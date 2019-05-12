@@ -23,14 +23,7 @@ public class Grasp2 {
 	private int rcl_size;
 	private int sol_size;
 
-	public static void main(String[] args) throws IOException {
-		
-		Grasp2 g = new Grasp2("set1/g3.rud",10);
-		ArrayList<Integer> solution = g.execute();
-		System.out.println(solution);
-		
-	}
-	
+
 	public Grasp2(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String w = "";

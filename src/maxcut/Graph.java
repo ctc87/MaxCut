@@ -1,39 +1,30 @@
 package maxcut;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
-public class Grasp {
+public class Graph {
 	
 	ArrayList<ArrayList<Integer>> weight = new ArrayList<ArrayList<Integer>>();
 	ArrayList<Integer> rcl = new ArrayList<Integer>();
 	Map<Integer, Integer> rclmap = new HashMap<>();
 	private int n_nodes;
 	private int n_arcs;
+	
 	private int k;
+	
 	private int rcl_size;
 	private int sol_size;
 	
-
 	
-
-	public static void main(String[] args) throws IOException {
-		
-		Grasp g = new Grasp("set1/prueba.rud",100);
-		g.execute();
-		
-	}
-	
-	public Grasp(String filename, int k) throws IOException {
+	public Graph(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String w = "";
 		String[] token;
@@ -72,68 +63,7 @@ public class Grasp {
 
 	}
 	
-	public void execute() {
-		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
-		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
-			actual_solution = construct();
-			//actual_solution = localsearch(actual_solution);
-		}
-	}
-	
-	public ArrayList<Integer> construct(){
-		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
-		ArrayList<Integer> solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			solution.add(0);
-		}
-		for(int i = 0; i < this.getSol_size(); i++) {
-			rcl = make_rcl();
-			System.out.println("CANDIDATOS \t" + rcl);
-			System.out.println("SOLUTION \t" + solution);
-			int numero;
-			do{
-				numero = get_random_index(rcl);
-			}while(solution.get(numero) == 1);
-			solution.set(numero, 1);
-			
-		}
-		return solution;
-	}
-	
-	public ArrayList<Integer> make_rcl(){
-		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			rcl.add(0);
-		}
-		int count = 0;
-		for (Map.Entry<Integer, Integer> entry : rclmap.entrySet()) {
-			if(count < this.getRcl_size()) {
-				rcl.set(entry.getKey(), 1);
-				count++;
-			}else {
-				break;
-			}
-		}
-		return rcl;
-		
-	}
-	
-	public void evaluate_rcl(){
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			
-		}
-	}
-	
-	public int get_random_index(ArrayList<Integer> rcl) {
-		int numero;
-		do {
-			numero = (int) (Math.random() * this.getN_nodes() - 1) + 1;
-		}while(rcl.get(numero) != 1);
-		return numero;
-	}
-	
-private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
+	private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
         
         Set<Entry<Integer,Integer>> mapEntries = aMap.entrySet();
         
@@ -149,7 +79,7 @@ private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap)
             public int compare(Entry<Integer, Integer> ele1,
                     Entry<Integer, Integer> ele2) {
                 
-                return ele1.getValue().compareTo(ele2.getValue());
+                return ele2.getValue().compareTo(ele1.getValue());
             }
         });
         
@@ -165,59 +95,132 @@ private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap)
         return aMap2;
         
     }
-	
-	public ArrayList<Integer> neighbourhoodsearch(){
-		ArrayList<Integer> solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
-		}
-		return solution;
-	}
-	
-	public ArrayList<Integer> localsearch(ArrayList<Integer> solution){
-		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
-		}
-		return solution;
+
+
+	/**
+	 * @return the weight
+	 */
+	public ArrayList<ArrayList<Integer>> getWeight() {
+		return weight;
 	}
 
-	public int getN_nodes() {
-		return n_nodes;
+
+	/**
+	 * @param weight the weight to set
+	 */
+	public void setWeight(ArrayList<ArrayList<Integer>> weight) {
+		this.weight = weight;
 	}
 
-	public void setN_nodes(int n_nodes) {
-		this.n_nodes = n_nodes;
+
+	/**
+	 * @return the rcl
+	 */
+	public ArrayList<Integer> getRcl() {
+		return rcl;
 	}
 
-	public int getN_arcs() {
-		return n_arcs;
+
+	/**
+	 * @param rcl the rcl to set
+	 */
+	public void setRcl(ArrayList<Integer> rcl) {
+		this.rcl = rcl;
 	}
 
-	public void setN_arcs(int n_arcs) {
-		this.n_arcs = n_arcs;
+
+	/**
+	 * @return the rclmap
+	 */
+	public Map<Integer, Integer> getRclmap() {
+		return rclmap;
 	}
-	
+
+
+	/**
+	 * @param rclmap the rclmap to set
+	 */
+	public void setRclmap(Map<Integer, Integer> rclmap) {
+		this.rclmap = rclmap;
+	}
+
+
+	/**
+	 * @return the k
+	 */
 	public int getK() {
 		return k;
 	}
 
+
+	/**
+	 * @param k the k to set
+	 */
 	public void setK(int k) {
 		this.k = k;
 	}
 
+
+	/**
+	 * @return the rcl_size
+	 */
 	public int getRcl_size() {
 		return rcl_size;
 	}
 
+
+	/**
+	 * @param rcl_size the rcl_size to set
+	 */
 	public void setRcl_size(int rcl_size) {
 		this.rcl_size = rcl_size;
 	}
 
+
+	/**
+	 * @return the sol_size
+	 */
 	public int getSol_size() {
 		return sol_size;
 	}
 
+
+	/**
+	 * @param sol_size the sol_size to set
+	 */
 	public void setSol_size(int sol_size) {
 		this.sol_size = sol_size;
 	}
 
+
+	/**
+	 * @return the n_nodes
+	 */
+	public int getN_nodes() {
+		return n_nodes;
+	}
+
+
+	/**
+	 * @param n_nodes the n_nodes to set
+	 */
+	public void setN_nodes(int n_nodes) {
+		this.n_nodes = n_nodes;
+	}
+
+
+	/**
+	 * @return the n_arcs
+	 */
+	public int getN_arcs() {
+		return n_arcs;
+	}
+
+
+	/**
+	 * @param n_arcs the n_arcs to set
+	 */
+	public void setN_arcs(int n_arcs) {
+		this.n_arcs = n_arcs;
+	}
 }

@@ -35,7 +35,7 @@ public class MultiBoot {
 		bestSolution = new ArrayList<Integer>(solution);
 		int i = 0;
 		while(i < maxCylesNotImproved) {
-			solution = MetaheuristicTools.localsearch(solution, NEIGHBOR_DISTANCE);
+			solution = MetaheuristicTools.localsearch(solution, NEIGHBOR_DISTANCE, graph);
 			actualObjetiveValue = MetaheuristicTools.function(solution, graph);
 			bestObjetiveValue = MetaheuristicTools.function(bestSolution, graph);
 			if(actualObjetiveValue > bestObjetiveValue ) {

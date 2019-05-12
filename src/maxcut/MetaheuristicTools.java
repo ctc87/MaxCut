@@ -25,7 +25,7 @@ public class MetaheuristicTools {
 		return sum;
 	}
 
-	public static ArrayList<Integer> localsearch(ArrayList<Integer> solution, int K){
+	public static ArrayList<Integer> localsearch(ArrayList<Integer> solution, int K, Graph g){
 		ArrayList<Integer> best_solution;
 		ArrayList<ArrayList<Integer>> neighbour = new ArrayList<ArrayList<Integer>>();
 		best_solution = new ArrayList<Integer>(solution);
@@ -64,8 +64,8 @@ public class MetaheuristicTools {
 		
 		int max = 0;
 		for(int i = 0; i < neighbour.size(); i++) {
-			if(function(neighbour.get(i)) > max) {
-				max = function(neighbour.get(i));
+			if(MetaheuristicTools.function(neighbour.get(i), g) > max) {
+				max = function(neighbour.get(i), g);
 				
 				best_solution = new ArrayList<Integer>(neighbour.get(i));
 			}

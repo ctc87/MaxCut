@@ -24,7 +24,7 @@ public class Grasp {
 	public static void main(String[] args) throws IOException {
 		
 		Grasp g = new Grasp("set1/g3.rud",100);
-		g.execute();
+		ArrayList<Integer> solution = g.execute();
 		
 	}
 	
@@ -67,7 +67,7 @@ public class Grasp {
 
 	}
 	
-	public void execute() {
+	public ArrayList<Integer> execute() {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getK(); i++) {
@@ -79,6 +79,7 @@ public class Grasp {
 			}
 		}
 		System.out.println(best_solution);
+		return best_solution;
 	}
 	
 	public ArrayList<Integer> construct(){

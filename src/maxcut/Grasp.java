@@ -28,6 +28,7 @@ public class Grasp {
 //		
 //	}
 //	
+
 	public Grasp(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String w = "";
@@ -78,7 +79,6 @@ public class Grasp {
 //				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
 			}
 		}
-//		System.out.println(best_solution);
 		return best_solution;
 	}
 	

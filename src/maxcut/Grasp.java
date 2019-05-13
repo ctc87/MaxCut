@@ -20,7 +20,8 @@ public class Grasp {
 	public static void main(String[] args) throws IOException {
 
 		Grasp g = new Grasp("set1/g3.rud", 100);
-		ArrayList<Integer> solution = g.execute();
+		//ArrayList<Integer> solution = g.execute();
+		g.tabooSearch(4);
 
 	}
 
@@ -89,7 +90,7 @@ public class Grasp {
 	public ArrayList<Integer> tabooSearch(int timeout) {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
-		Queue<ArrayList<Integer>> cola = new PriorityQueue<ArrayList<Integer>>(timeout);
+		Queue<ArrayList<Integer>> cola = new ArrayDeque<ArrayList<Integer>>(timeout);
 
 		for (int i = 0; i < this.getK(); i++) {
 			actual_solution = construct();
@@ -99,7 +100,6 @@ public class Grasp {
 				best_solution = new ArrayList<Integer>(actual_solution);
 				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
 			}
-			
 			if(cola.size() == timeout) {
 				cola.poll();
 			}

@@ -5,11 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 public class Grasp {
@@ -26,13 +21,13 @@ public class Grasp {
 
 	
 
-	public static void main(String[] args) throws IOException {
-		
-		Grasp g = new Grasp("set1/prueba.rud",100);
-		g.execute();
-		
-	}
-	
+//	public static void main(String[] args) throws IOException {
+//		
+//		Grasp g = new Grasp("set1/g3.rud",100);
+//		ArrayList<Integer> solution = g.execute();
+//		
+//	}
+//	
 	public Grasp(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String w = "";
@@ -46,7 +41,7 @@ public class Grasp {
 			for(int j = 0; j < this.getN_arcs(); j++) {
 				dummy.add(null);
 			}
-			weight.add(new ArrayList<Integer>(dummy));
+			weight.add(dummy);
 		}
 		int actual_node = 0;
 		int count_arcs = 0;
@@ -72,13 +67,19 @@ public class Grasp {
 
 	}
 	
-	public void execute() {
+	public ArrayList<Integer> execute() {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getK(); i++) {
 			actual_solution = construct();
-			//actual_solution = localsearch(actual_solution);
+			actual_solution = localsearch(actual_solution);
+			if(function(actual_solution) > function(best_solution)) {
+				best_solution = new ArrayList<Integer>(actual_solution);
+//				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
+			}
 		}
+//		System.out.println(best_solution);
+		return best_solution;
 	}
 	
 	public ArrayList<Integer> construct(){
@@ -88,9 +89,8 @@ public class Grasp {
 			solution.add(0);
 		}
 		for(int i = 0; i < this.getSol_size(); i++) {
-			rcl = make_rcl();
-			System.out.println("CANDIDATOS \t" + rcl);
-			System.out.println("SOLUTION \t" + solution);
+			evaluate_rcl();
+			rcl = make_rcl(solution);
 			int numero;
 			do{
 				numero = get_random_index(rcl);
@@ -98,21 +98,24 @@ public class Grasp {
 			solution.set(numero, 1);
 			
 		}
+		//System.out.println(solution);
 		return solution;
 	}
 	
-	public ArrayList<Integer> make_rcl(){
+	public ArrayList<Integer> make_rcl(ArrayList<Integer> solution){
 		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getN_nodes(); i++) {
 			rcl.add(0);
 		}
 		int count = 0;
 		for (Map.Entry<Integer, Integer> entry : rclmap.entrySet()) {
-			if(count < this.getRcl_size()) {
-				rcl.set(entry.getKey(), 1);
-				count++;
-			}else {
-				break;
+			if(solution.get(entry.getKey()) != 1) {
+				if(count < this.getRcl_size()) {
+					rcl.set(entry.getKey(), 1);
+					count++;
+				}else {
+					break;
+				}
 			}
 		}
 		return rcl;
@@ -121,8 +124,15 @@ public class Grasp {
 	
 	public void evaluate_rcl(){
 		for(int i = 0; i < this.getN_nodes(); i++) {
-			
+			int sum = 0;
+			for(int j = 0; j < this.getN_nodes(); j++) {
+				if(weight.get(i).get(j) != null) {
+					sum += weight.get(i).get(j);
+				}
+			}
+			rclmap.put(i, sum);
 		}
+		rclmap = sortMapByValues(rclmap);
 	}
 	
 	public int get_random_index(ArrayList<Integer> rcl) {
@@ -133,7 +143,7 @@ public class Grasp {
 		return numero;
 	}
 	
-private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
+	private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
         
         Set<Entry<Integer,Integer>> mapEntries = aMap.entrySet();
         
@@ -149,7 +159,7 @@ private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap)
             public int compare(Entry<Integer, Integer> ele1,
                     Entry<Integer, Integer> ele2) {
                 
-                return ele1.getValue().compareTo(ele2.getValue());
+                return ele2.getValue().compareTo(ele1.getValue());
             }
         });
         
@@ -166,18 +176,73 @@ private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap)
         
     }
 	
-	public ArrayList<Integer> neighbourhoodsearch(){
-		ArrayList<Integer> solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
+	public ArrayList<Integer> localsearch(ArrayList<Integer> solution){
+		ArrayList<Integer> best_solution;
+		ArrayList<ArrayList<Integer>> neighbour = new ArrayList<ArrayList<Integer>>();
+		best_solution = new ArrayList<Integer>(solution);
+		neighbour.add(new ArrayList<Integer>(solution));
+		for(int i = 0; i < this.getN_nodes(); i++) {
+			ArrayList<Integer> aux = new ArrayList<Integer>(solution);
+			
+			if(aux.get(i) == 1) {
+				if(!(i == 0)){				
+					if(aux.get(i - 1) == 0) {
+						aux.set(i - 1, 1);
+						aux.set(i, 0);
+						if(!neighbour.contains(aux)) {
+							neighbour.add(new ArrayList<Integer>(aux));
+							
+						}
+						aux.set(i - 1, 0);
+						aux.set(i, 1);
+					}
+				}
+				if(!(i == this.getN_nodes() - 1)){
+					if(aux.get(i + 1) == 0) {
+						aux.set(i + 1, 1);
+						aux.set(i, 0);
+						if(!neighbour.contains(aux)) {
+							neighbour.add(new ArrayList<Integer>(aux));
+							
+						}
+						aux.set(i + 1, 0);
+						aux.set(i, 1);
+					}
+				}
+			}
+			
 		}
-		return solution;
+		
+		int max = 0;
+		for(int i = 0; i < neighbour.size(); i++) {
+			if(function(neighbour.get(i)) > max) {
+				max = function(neighbour.get(i));
+				
+				best_solution = new ArrayList<Integer>(neighbour.get(i));
+			}
+		}
+		
+		return best_solution;
 	}
 	
-	public ArrayList<Integer> localsearch(ArrayList<Integer> solution){
-		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getK(); i++) {
+	public int function(ArrayList<Integer> sol) {
+		/*if(!sol.contains(1)) {
+			return -99999999;
+		}*/
+		int sum = 0;
+		for(int i = 0; i < sol.size(); i++) {
+			for(int j = 0; j < sol.size(); j++) {
+				if(sol.get(i) == 1) {
+					if(sol.get(j) != 1) {
+						if(weight.get(i).get(j) != null) {
+							sum += weight.get(i).get(j);
+						}
+					}
+				}
+				
+			}
 		}
-		return solution;
+		return sum;
 	}
 
 	public int getN_nodes() {

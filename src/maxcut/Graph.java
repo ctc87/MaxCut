@@ -63,7 +63,7 @@ public class Graph {
 
 	}
 	
-	private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
+private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
         
         Set<Entry<Integer,Integer>> mapEntries = aMap.entrySet();
         

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class MetaheuristicTools {
 	
 	
+
+	
 	public static int function(ArrayList<Integer> sol, Graph g) {
 		/*if(!sol.contains(1)) {
 			return -99999999;
@@ -19,7 +21,7 @@ public class MetaheuristicTools {
 						}
 					}
 				}
-		
+				
 			}
 		}
 		return sum;

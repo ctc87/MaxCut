@@ -23,7 +23,7 @@ public class Grasp {
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp g = new Grasp("set1/g3.rud",100);
+		Grasp g = new Grasp("set1/g11.rud",1000);
 		ArrayList<Integer> solution = g.execute();
 		
 	}

@@ -25,7 +25,7 @@ public class Grasp2 {
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp2 g = new Grasp2("set1/g3.rud",10);
+		Grasp2 g = new Grasp2("set1/g11.rud",10);
 		ArrayList<Integer> solution = g.execute();
 		System.out.println(solution);
 		

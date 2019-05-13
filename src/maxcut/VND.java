@@ -1,4 +1,4 @@
-package P4;
+package maxcut;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -32,9 +32,10 @@ public class VND {
 	 * Leer.
 	 *
 	 * @param filename the filename
+	 * @throws IOException 
+	 * @throws NumberFormatException 
 	 */
-	public void leer(String filename) {
-		try {
+	public void leer(String filename) throws NumberFormatException, IOException {
 			BufferedReader reader = new BufferedReader(new FileReader(filename));
 			String w = "";
 			String[] token;
@@ -66,13 +67,7 @@ public class VND {
 								
 			}
 			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("Fichero leído");
 	}
 	
 	/**
@@ -80,8 +75,10 @@ public class VND {
 	 *
 	 * @param filename the filename
 	 * @param k the k
+	 * @throws IOException 
+	 * @throws NumberFormatException 
 	 */
-	public VND (String filename, int k,Solucion sols) {
+	public VND (String filename, int k,Solucion sols) throws NumberFormatException, IOException {
 		this.leer(filename);
 		sol = sols;	
 		int i = 1;		

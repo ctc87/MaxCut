@@ -1,4 +1,4 @@
-package P4;
+package maxcut;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

@@ -1,13 +1,14 @@
-package P4;
+package maxcut;
 
+import java.io.IOException;
 import java.util.Locale;
 
-public class Main {
+public class Main2 {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NumberFormatException, IOException {
 		 long startTime = System.currentTimeMillis();
 		 System.out.println("");
-		String file = "C:\\Users\\sam\\Documents\\Nueva carpeta (2)\\abc.rud";
+		String file = "set1/g11.rud";
 		  System.out.println("VNS - >");
 		VNS vns = new VNS(file,10);
 		// System.out.println("Solucion:\n" + vns.toString() + "\n Valor :");

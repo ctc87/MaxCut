@@ -1,4 +1,4 @@
-package P4;
+package maxcut;
 
 public class Solucion {
 

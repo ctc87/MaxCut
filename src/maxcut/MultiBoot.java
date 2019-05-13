@@ -42,6 +42,7 @@ public class MultiBoot {
 //			System.out.println( grasp.function(bestSolution));
 			if(actualObjetiveValue > bestObjetiveValue ) {
 				bestSolution = new ArrayList<Integer>(solution);
+				System.out.println( grasp.function(bestSolution));
 				i = 0;
 			} else {
 				i++;

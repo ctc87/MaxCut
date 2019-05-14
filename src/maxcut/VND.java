@@ -172,7 +172,7 @@ public class VND {
 		    for (int i = 0; i < sol.getSol().length; i++){
 		      if (sol.getSol()[i]){
 		        for (int j = i + 1 ; j < sol.getSol().length; j++){
-		          if (sol.getSol()[j]){
+		          if (!sol.getSol()[j]){
 		        	  //System.out.println(weight.get(i).get(j));
 		            suma += this.weight.get(i).get(j);
 		          }

@@ -8,7 +8,7 @@ public class Main {
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		 long startTime = System.currentTimeMillis();
 		 System.out.println("");
-		String file = "set1/g3.rud";
+		String file = "set1/g11.rud";
 		  System.out.println("VNS - >");
 		VNS vns = new VNS(file,10);
 		 System.out.println("Solucion:\n" + vns.toString() + "\n Valor :");

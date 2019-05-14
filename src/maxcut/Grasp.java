@@ -23,9 +23,10 @@ public class Grasp {
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp g = new Grasp("set1/g11.rud",1000);
+		Grasp g = new Grasp("set1/g11.rud",10);
 		ArrayList<Integer> solution = g.execute();
-		
+		System.out.println("FIN");
+		ArrayList<Integer> solution2 = g.tabooSearch(10000);
 	}
 	
 //	public static void main(String[] args) throws IOException {
@@ -74,6 +75,30 @@ public class Grasp {
 		this.setSol_size(this.getN_nodes()/5);
 
 	}
+	
+	public ArrayList<Integer> tabooSearch(int timeout) {
+		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
+		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
+		Queue<ArrayList<Integer>> cola = new ArrayDeque<ArrayList<Integer>>(timeout);
+
+		for (int i = 0; i < this.getK(); i++) {
+			actual_solution = construct();
+			actual_solution = localsearch(actual_solution);
+			
+			if ((!cola.contains(actual_solution)) && (function(actual_solution) > function(best_solution))) {
+				best_solution = new ArrayList<Integer>(actual_solution);
+				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
+			}
+			if(cola.size() == timeout) {
+				cola.poll();
+			}
+			cola.add(actual_solution);
+		}
+
+		System.out.println(best_solution);
+		return best_solution;
+	}
+
 	
 	public ArrayList<Integer> execute() {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());

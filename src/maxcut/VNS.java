@@ -263,7 +263,7 @@ public class VNS {
 		      if (sol.getSol()[i]){
 		        contador++;
 		        for (int j = i + 1 ; j < sol.getSol().length; j++){
-		          if (sol.getSol()[j]){
+		          if (!sol.getSol()[j]){
 		            suma += this.weight.get(i).get(j);
 		          }
 		        }

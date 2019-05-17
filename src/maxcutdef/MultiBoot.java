@@ -1,4 +1,4 @@
-package maxcut;
+package maxcutdef;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class MultiBoot {
 	public static void main(String[] args) throws IOException {
 		
 		MultiBoot g = new MultiBoot();
-		g.execute(1000);
+		g.execute(10);
 		//System.out.println("FIN");
 		//ArrayList<Integer> solution2 = g.tabooSearch(10000);
 	}
@@ -31,7 +31,7 @@ public class MultiBoot {
 	static void execute(int maxCylesNotImproved) {
 		Grasp grasp = null;
 		try {
-			grasp = new Grasp("set1/g27.rud",10);
+			grasp = new Grasp("set1/g11.rud",10);
 			//graph = new Graph("set1/g3.rud",10);
 		} catch (IOException e) {
 			e.printStackTrace();

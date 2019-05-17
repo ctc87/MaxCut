@@ -1,44 +1,39 @@
-package maxcut;
+package maxcutdef;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.Map.Entry;
 
-public class Grasp {
-	
+public class Taboo {
+
 	ArrayList<ArrayList<Integer>> weight = new ArrayList<ArrayList<Integer>>();
 	ArrayList<Integer> rcl = new ArrayList<Integer>();
 	Map<Integer, Integer> rclmap = new HashMap<>();
 	private int n_nodes;
 	private int n_arcs;
 	private int k;
-	private int rcl_size;
-	private int sol_size;
-	
-
-	
+	String filename;
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp g = new Grasp("set1/g11.rud",1000);
-		ArrayList<Integer> solution = g.execute();
+		Taboo g = new Taboo("set1/g11.rud",100);
+		ArrayList<Integer> solution = g.execute(10);
 		System.out.println(g.function(solution) + " --- " + solution);
-		//System.out.println("FIN");
-		//ArrayList<Integer> solution2 = g.tabooSearch(10000);
 	}
-	
-//	public static void main(String[] args) throws IOException {
-//		
-//		Grasp g = new Grasp("set1/g3.rud",100);
-//		ArrayList<Integer> solution = g.execute();
-//		
-//	}
-//	
 
-	public Grasp(String filename, int k) throws IOException {
+	public Taboo(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
 		String w = "";
 		String[] token;
@@ -53,9 +48,6 @@ public class Grasp {
 			}
 			weight.add(dummy);
 		}
-		int actual_node = 0;
-		int count_arcs = 0;
-		int count_weight = 0;
 		while(reader.ready()) {
 			w = reader.readLine();
 			token = w.split("\\s+");
@@ -69,125 +61,51 @@ public class Grasp {
 			
 		}
 		
-		rclmap = sortMapByValues(rclmap);		
-		
 		this.setK(k);
-		this.setRcl_size(this.getN_nodes()/100);
-		this.setSol_size(this.getN_nodes()/5);
+		this.filename = filename;
 
 	}
-	
-	public ArrayList<Integer> tabooSearch(int timeout) {
+
+	public ArrayList<Integer> execute(int timeout) throws IOException {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
 		Queue<ArrayList<Integer>> cola = new ArrayDeque<ArrayList<Integer>>(timeout);
-
+		Grasp g = new Grasp(this.filename,10);
+		best_solution = g.execute();
 		for (int i = 0; i < this.getK(); i++) {
-			actual_solution = construct();
-			actual_solution = localsearch(actual_solution,1);
-
-			
-			if ((!cola.contains(actual_solution)) && (function(actual_solution) > function(best_solution))) {
-				best_solution = new ArrayList<Integer>(actual_solution);
+			System.out.println(i);
+			ArrayList<Integer> newsol = localsearch(best_solution,1);
+			System.out.println("VAL: " + function(newsol) + " ---- " + newsol);
+			ArrayList<Integer> actual_taboo = taboo_element(best_solution, newsol);
+			if ((!cola.contains(actual_taboo)) && (function(newsol) > function(best_solution))) {
+				best_solution = new ArrayList<Integer>(newsol);
 				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
 			}
+			cola.add(actual_taboo);
+			System.out.println(cola);
 			if(cola.size() == timeout) {
 				cola.poll();
 			}
-			cola.add(actual_solution);
+			
+			
+			
 		}
 
 		System.out.println(best_solution);
 		return best_solution;
 	}
-
 	
-	public ArrayList<Integer> execute() {
-		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
-		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
-		
-		for(int i = 0; i < this.getK(); i++) {
-			System.out.println("Iteración: " + i);
-			actual_solution = construct();
-			actual_solution = localsearch(actual_solution,1);
-			if(function(actual_solution) > function(best_solution)) {
-				best_solution = new ArrayList<Integer>(actual_solution);
-				System.out.println("VAL: " + function(best_solution) + " --> size: " + Collections.frequency(best_solution, 1) + " ---- " + best_solution);
-			}
-		}
-		return best_solution;
-	}
-	
-	public ArrayList<Integer> construct(){
-		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
-		ArrayList<Integer> solution = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			solution.add(0);
-		}
-		Boolean end = false;
-		while(!end) {
-			evaluate_rcl(solution);
-			rcl = make_rcl(solution);
-			int numero;
-			numero = get_random_index(rcl);
-			ArrayList<Integer> old_sol = new ArrayList<Integer>(solution);
-			solution.set(numero, 1);
-			if(function(solution) < function(old_sol)) {
-				end = true;
-				solution.set(numero, 0);
+	public ArrayList<Integer> taboo_element(ArrayList<Integer> solution, ArrayList<Integer> neighbour) {
+		ArrayList<Integer> final_element = new ArrayList<Integer>();
+		for(int i = 0; i < this.getN_nodes();i++) {
+			if(solution.get(i) == neighbour.get(i)) {
+				final_element.add(null);
+			}else {
+				final_element.add(neighbour.get(i));
 			}
 			
 		}
-		//System.out.println(solution);
-		return solution;
-	}
-	
-	public ArrayList<Integer> make_rcl(ArrayList<Integer> solution){
-		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			rcl.add(0);
-		}
-		int count = 0;
-		for (Map.Entry<Integer, Integer> entry : rclmap.entrySet()) {
-			if(solution.get(entry.getKey()) != 1) {
-				if(count < this.getRcl_size()) {
-					rcl.set(entry.getKey(), 1);
-					count++;
-				}else {
-					break;
-				}
-			}
-		}
-		return rcl;
-		
-	}
-	
-	public void evaluate_rcl(ArrayList<Integer> solution){
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			int sum = 0;
-			if(solution.get(i) != 1) {
-				for(int j = 0; j < this.getN_nodes(); j++) {
-					if(solution.get(j) != 1) {
-						if(weight.get(i).get(j) != null) {
-							sum += weight.get(i).get(j);
-						}
-					}
-				}
-			}
-			
-			rclmap.put(i, sum);
-			
-
-		}
-		rclmap = sortMapByValues(rclmap);
-	}
-	
-	public int get_random_index(ArrayList<Integer> rcl) {
-		int numero;
-		do {
-			numero = (int) (Math.random() * this.getN_nodes() - 1) + 1;
-		}while(rcl.get(numero) != 1);
-		return numero;
+		return final_element;
 	}
 	
 	private static Map<Integer, Integer> sortMapByValues(Map<Integer, Integer> aMap) {
@@ -263,7 +181,7 @@ public class Grasp {
 		for(int i = 0; i < neighbour.size(); i++) {
 			if(function(neighbour.get(i)) > max) {
 				max = function(neighbour.get(i));
-				
+				System.out.println(best_solution);
 				best_solution = new ArrayList<Integer>(neighbour.get(i));
 			}
 		}
@@ -277,8 +195,8 @@ public class Grasp {
 		}*/
 		int sum = 0;
 		for(int i = 0; i < sol.size(); i++) {
-			for(int j = 0; j < sol.size(); j++) {
-				if(sol.get(i) == 1) {
+			if(sol.get(i) == 1) {
+				for(int j = 0; j < sol.size(); j++) {
 					if(sol.get(j) != 1) {
 						if(weight.get(i).get(j) != null) {
 							sum += weight.get(i).get(j);
@@ -313,22 +231,6 @@ public class Grasp {
 
 	public void setK(int k) {
 		this.k = k;
-	}
-
-	public int getRcl_size() {
-		return rcl_size;
-	}
-
-	public void setRcl_size(int rcl_size) {
-		this.rcl_size = rcl_size;
-	}
-
-	public int getSol_size() {
-		return sol_size;
-	}
-
-	public void setSol_size(int sol_size) {
-		this.sol_size = sol_size;
 	}
 
 }

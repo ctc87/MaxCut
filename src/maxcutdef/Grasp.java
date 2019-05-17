@@ -1,4 +1,4 @@
-package maxcut;
+package maxcutdef;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -16,27 +16,15 @@ public class Grasp {
 	private int n_arcs;
 	private int k;
 	private int rcl_size;
-	private int sol_size;
-	
-
-	
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp g = new Grasp("set1/g11.rud",1000);
+		Grasp g = new Grasp("set1/g49.rud",10);
 		ArrayList<Integer> solution = g.execute();
 		System.out.println(g.function(solution) + " --- " + solution);
 		//System.out.println("FIN");
 		//ArrayList<Integer> solution2 = g.tabooSearch(10000);
 	}
-	
-//	public static void main(String[] args) throws IOException {
-//		
-//		Grasp g = new Grasp("set1/g3.rud",100);
-//		ArrayList<Integer> solution = g.execute();
-//		
-//	}
-//	
 
 	public Grasp(String filename, int k) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(filename));
@@ -53,9 +41,6 @@ public class Grasp {
 			}
 			weight.add(dummy);
 		}
-		int actual_node = 0;
-		int count_arcs = 0;
-		int count_weight = 0;
 		while(reader.ready()) {
 			w = reader.readLine();
 			token = w.split("\\s+");
@@ -70,38 +55,11 @@ public class Grasp {
 		}
 		
 		rclmap = sortMapByValues(rclmap);		
-		
 		this.setK(k);
-		this.setRcl_size(this.getN_nodes()/100);
-		this.setSol_size(this.getN_nodes()/5);
+		this.setRcl_size(this.getN_nodes()/200);
 
 	}
-	
-	public ArrayList<Integer> tabooSearch(int timeout) {
-		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
-		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
-		Queue<ArrayList<Integer>> cola = new ArrayDeque<ArrayList<Integer>>(timeout);
 
-		for (int i = 0; i < this.getK(); i++) {
-			actual_solution = construct();
-			actual_solution = localsearch(actual_solution,1);
-
-			
-			if ((!cola.contains(actual_solution)) && (function(actual_solution) > function(best_solution))) {
-				best_solution = new ArrayList<Integer>(actual_solution);
-				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
-			}
-			if(cola.size() == timeout) {
-				cola.poll();
-			}
-			cola.add(actual_solution);
-		}
-
-		System.out.println(best_solution);
-		return best_solution;
-	}
-
-	
 	public ArrayList<Integer> execute() {
 		ArrayList<Integer> best_solution = new ArrayList<Integer>(this.getN_nodes());
 		ArrayList<Integer> actual_solution = new ArrayList<Integer>(this.getN_nodes());
@@ -126,7 +84,6 @@ public class Grasp {
 		}
 		Boolean end = false;
 		while(!end) {
-			evaluate_rcl(solution);
 			rcl = make_rcl(solution);
 			int numero;
 			numero = get_random_index(rcl);
@@ -143,6 +100,23 @@ public class Grasp {
 	}
 	
 	public ArrayList<Integer> make_rcl(ArrayList<Integer> solution){
+		for(int i = 0; i < this.getN_nodes(); i++) {
+			int sum = 0;
+			if(solution.get(i) != 1) {
+				for(int j = 0; j < this.getN_nodes(); j++) {
+					if(solution.get(j) != 1) {
+						if(weight.get(i).get(j) != null) {
+							sum += weight.get(i).get(j);
+						}
+					}
+				}
+			}
+			
+			rclmap.put(i, sum);
+			
+
+		}
+		rclmap = sortMapByValues(rclmap);
 		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getN_nodes(); i++) {
 			rcl.add(0);
@@ -161,27 +135,7 @@ public class Grasp {
 		return rcl;
 		
 	}
-	
-	public void evaluate_rcl(ArrayList<Integer> solution){
-		for(int i = 0; i < this.getN_nodes(); i++) {
-			int sum = 0;
-			if(solution.get(i) != 1) {
-				for(int j = 0; j < this.getN_nodes(); j++) {
-					if(solution.get(j) != 1) {
-						if(weight.get(i).get(j) != null) {
-							sum += weight.get(i).get(j);
-						}
-					}
-				}
-			}
-			
-			rclmap.put(i, sum);
-			
 
-		}
-		rclmap = sortMapByValues(rclmap);
-	}
-	
 	public int get_random_index(ArrayList<Integer> rcl) {
 		int numero;
 		do {
@@ -277,8 +231,8 @@ public class Grasp {
 		}*/
 		int sum = 0;
 		for(int i = 0; i < sol.size(); i++) {
-			for(int j = 0; j < sol.size(); j++) {
-				if(sol.get(i) == 1) {
+			if(sol.get(i) == 1) {
+				for(int j = 0; j < sol.size(); j++) {
 					if(sol.get(j) != 1) {
 						if(weight.get(i).get(j) != null) {
 							sum += weight.get(i).get(j);
@@ -321,14 +275,6 @@ public class Grasp {
 
 	public void setRcl_size(int rcl_size) {
 		this.rcl_size = rcl_size;
-	}
-
-	public int getSol_size() {
-		return sol_size;
-	}
-
-	public void setSol_size(int sol_size) {
-		this.sol_size = sol_size;
 	}
 
 }

@@ -1,5 +1,6 @@
 package maxcutdef;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -24,7 +25,6 @@ public class App {
 		Scanner sn = new Scanner(System.in);
         boolean salir = false;
         int opcion; //Guardaremos la opcion del usuario
-        int k_local = 3;
         while (!salir) {
         	
             System.out.println("\nBienvenido selecciones una opción.");
@@ -177,11 +177,15 @@ public class App {
 	
 	public static void executeGrasp() {
 		// TODO: CAMBIAR EL TAMAÑO DE LA LISTA DE CANSIDATOIS PARA EL CONSTRUCTOR
-		Grasp g = new Grasp(constructFIle(),k);
+		Grasp g = null;
+		try {
+			g = new Grasp(constructFIle(),k);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		ArrayList<Integer> solution = g.execute();
 		System.out.println(g.function(solution) + " --- " + solution);
 	}
-
-}
 
 }

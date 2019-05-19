@@ -27,7 +27,7 @@ public class Deterministic {
 	
 	public static void main(String[] args) throws NumberFormatException, IOException, InterruptedException {
 		
-		Deterministic d = new Deterministic("set1/g11.rud");
+		Deterministic d = new Deterministic("set2/sg3dl051000.mc");
 		ArrayList<Integer> solution = d.execute();
 		
 	}

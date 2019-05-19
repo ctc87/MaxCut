@@ -14,37 +14,42 @@ public class GVNS {
 	private int k;
 	
 	public static void main(String[] args) throws IOException {
-		GVNS v = new GVNS("set1/g11.rud",25);
+		GVNS v = new GVNS("set2/sg3dl149000.mc",50);
 		ArrayList<Integer> solution;
-		solution = v.execute("set1/g11.rud", 25,100);
+		solution = v.execute("set2/sg3dl149000.mc", 50,100);
 		
 	}
 	
 	public ArrayList<Integer> execute(String filename, int k,int maxitr) throws IOException{
 		Boolean no_improvement = false;
 		Grasp g = new Grasp(filename, 10);
-		ArrayList<Integer> solution = g.execute();
-		for(int i = 0; i < maxitr; i++) {
-			ArrayList<Integer> first_sol = new ArrayList<Integer>(solution);
+		ArrayList<Integer> solution = new ArrayList<Integer>();
+		
+		ArrayList<Integer> first_sol = g.execute();
+		
+		for(int i = 0; (i < maxitr); i++) {
+			System.out.println("Iteracion = " + i);
+			ArrayList<Integer> best_solution = new ArrayList<Integer>(first_sol);
 			int l = 1;
 			while(l <= k) {
-				ArrayList<Integer> old_sol = new ArrayList<Integer>(solution);
-				int l2 = 10;
-				solution = localsearchrandom(solution,l);
-				solution = VND(solution,l2);
 				
-				if(function(solution) <= function(old_sol)) {
+				int l2 = 50;
+				
+				solution = localsearchrandom(best_solution,l);
+				ArrayList<Integer> old_solution = new ArrayList<Integer>(solution);
+				solution = VND(solution,l2);
+				if(function(solution) <= function(best_solution)) {
 					l++;
-					solution = new ArrayList<Integer>(old_sol);
+					solution = new ArrayList<Integer>(old_solution);
 				}else {
 					l = 1;
+					best_solution = new ArrayList<Integer>(solution);
+					System.out.println("VAL: " + function(solution) + " --> size: " + Collections.frequency(solution, 1) + " ---- " + solution);
 				}
 				
+				
 			}
-			if(solution.containsAll(first_sol)) {
-				no_improvement = true;
-			}
-			System.out.println("VAL: " + function(solution) + " --> size: " + Collections.frequency(solution, 1) + " ---- " + solution);
+			System.out.println("VAL: " + function(best_solution) + " --> size: " + Collections.frequency(best_solution, 1) + " ---- " + best_solution);
 			
 		}
 		
@@ -54,27 +59,34 @@ public class GVNS {
 	
 	public ArrayList<Integer> VND(ArrayList<Integer> solution, int k){
 		Boolean no_improvement = false;
-		while(!no_improvement) {
-			ArrayList<Integer> first_sol = new ArrayList<Integer>(solution);
-			int l = 1;
-			while(l <= k) {
-				ArrayList<Integer> old_sol = new ArrayList<Integer>(solution);
-				solution = localsearch(solution,l);
-				
-				if(function(solution) <= function(old_sol)) {
-					l++;
-					solution = new ArrayList<Integer>(old_sol);
-				}else {
-					l = 1;
-				}
-			}
-			if(solution.containsAll(first_sol)) {
-				no_improvement = true;
-			}
+		ArrayList<Integer> first_sol = new ArrayList<Integer>(solution);
+		int l = 1;
+		while(l <= k) {
+			ArrayList<Integer> old_sol = new ArrayList<Integer>(solution);
+			solution = localsearch(solution,l);
 			
+			if(function(solution) <= function(old_sol)) {
+				l++;
+				solution = new ArrayList<Integer>(old_sol);
+			}else {
+				l = 1;
+			}
 		}
+		if(check_equal(solution,first_sol)) {
+			no_improvement = true;
+		}
+			
 		
 		return solution;
+	}
+	
+	public Boolean check_equal(ArrayList<Integer> a, ArrayList<Integer> b) {
+		for(int i = 0; i < a.size(); i++) {
+			if(a.get(i) != b.get(i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public GVNS(String filename, int k) throws IOException {

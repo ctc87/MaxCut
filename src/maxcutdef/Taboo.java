@@ -28,7 +28,7 @@ public class Taboo {
 
 	public static void main(String[] args) throws IOException {
 		
-		Taboo g = new Taboo("set1/g11.rud",100);
+		Taboo g = new Taboo("set2/sg3dl051000.mc",100);
 		ArrayList<Integer> solution = g.execute(10);
 		System.out.println(g.function(solution) + " --- " + solution);
 	}

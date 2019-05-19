@@ -19,7 +19,7 @@ public class Grasp {
 
 	public static void main(String[] args) throws IOException {
 		
-		Grasp g = new Grasp("set1/g49.rud",10);
+		Grasp g = new Grasp("set2/sg3dl105000.mc",100);
 		ArrayList<Integer> solution = g.execute();
 		System.out.println(g.function(solution) + " --- " + solution);
 		//System.out.println("FIN");
@@ -56,7 +56,8 @@ public class Grasp {
 		
 		rclmap = sortMapByValues(rclmap);		
 		this.setK(k);
-		this.setRcl_size(this.getN_nodes()/200);
+		this.setRcl_size(this.getN_nodes()/100);
+		System.out.println();
 
 	}
 
@@ -100,6 +101,8 @@ public class Grasp {
 	}
 	
 	public ArrayList<Integer> make_rcl(ArrayList<Integer> solution){
+		//--------------- este criterio va mucho mas rapido pero da peores resultados ----------//
+		/*
 		for(int i = 0; i < this.getN_nodes(); i++) {
 			int sum = 0;
 			if(solution.get(i) != 1) {
@@ -115,7 +118,21 @@ public class Grasp {
 			rclmap.put(i, sum);
 			
 
+		}*/
+		//-----------------------------------------------------------------------------------//
+		// ------------- este criterio da mejores resultados pero tarda mucho más ------------//
+		for(int i = 0; i < this.getN_nodes(); i++) {
+			if(solution.get(i) != 1) {
+				solution.set(i, 1);
+				rclmap.put(i, function(solution));
+				solution.set(i, 0);
+			}else {
+				rclmap.put(i, -9999999);
+			}
+			
 		}
+		//-------------------------------------------------------------------------------//
+		
 		rclmap = sortMapByValues(rclmap);
 		ArrayList<Integer> rcl = new ArrayList<Integer>(this.getN_nodes());
 		for(int i = 0; i < this.getN_nodes(); i++) {
@@ -226,9 +243,9 @@ public class Grasp {
 	}
 	
 	public int function(ArrayList<Integer> sol) {
-		/*if(!sol.contains(1)) {
+		if(!sol.contains(1)) {
 			return -99999999;
-		}*/
+		}
 		int sum = 0;
 		for(int i = 0; i < sol.size(); i++) {
 			if(sol.get(i) == 1) {

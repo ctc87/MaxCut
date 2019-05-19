@@ -14,9 +14,9 @@ public class BVNS {
 	private int k;
 	
 	public static void main(String[] args) throws IOException {
-		BVNS v = new BVNS("set1/g49.rud",25);
+		BVNS v = new BVNS("set2/sg3dl052000.mc",25);
 		ArrayList<Integer> solution;
-		solution = v.execute("set1/g49.rud", 25,100);
+		solution = v.execute("set2/sg3dl052000.mc", 25,100);
 		
 	}
 	

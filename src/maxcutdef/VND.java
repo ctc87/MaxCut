@@ -16,9 +16,9 @@ public class VND {
 	private int k;
 	
 	public static void main(String[] args) throws IOException {
-		VND v = new VND("set2/sg3dl051000.mc",50);
+		VND v = new VND("set1/g13.rud",50);
 		ArrayList<Integer> solution;
-		solution = v.execute("set2/sg3dl051000.mc", 50);
+		solution = v.execute("set1/g13.rud", 50);
 		
 	}
 	
@@ -41,7 +41,7 @@ public class VND {
 				}
 				System.out.println("VAL: " + function(solution) + " --> size: " + Collections.frequency(solution, 1) + " ---- " + solution);
 			}
-			if(solution.containsAll(first_sol)) {
+			if(function(solution) < function(first_sol)) {
 				no_improvement = true;
 			}
 			

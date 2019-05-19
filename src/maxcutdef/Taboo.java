@@ -28,7 +28,7 @@ public class Taboo {
 
 	public static void main(String[] args) throws IOException {
 		
-		Taboo g = new Taboo("set2/sg3dl051000.mc",100);
+		Taboo g = new Taboo("set1/g11.rud",100);
 		ArrayList<Integer> solution = g.execute(10);
 		System.out.println(g.function(solution) + " --- " + solution);
 	}
@@ -74,20 +74,15 @@ public class Taboo {
 		best_solution = g.execute();
 		for (int i = 0; i < this.getK(); i++) {
 			System.out.println(i);
-			ArrayList<Integer> newsol = localsearch(best_solution,1);
+			ArrayList<Integer> newsol = localsearch(best_solution,1,cola);
 			System.out.println("VAL: " + function(newsol) + " ---- " + newsol);
-			ArrayList<Integer> actual_taboo = taboo_element(best_solution, newsol);
-			if ((!cola.contains(actual_taboo)) && (function(newsol) > function(best_solution))) {
+			if (((function(newsol) > function(best_solution)))) {
 				best_solution = new ArrayList<Integer>(newsol);
 				System.out.println("VAL: " + function(best_solution) + " ---- " + best_solution);
 			}
-			cola.add(actual_taboo);
-			System.out.println(cola);
 			if(cola.size() == timeout) {
 				cola.poll();
 			}
-			
-			
 			
 		}
 
@@ -141,11 +136,10 @@ public class Taboo {
         
     }
 	
-	public ArrayList<Integer> localsearch(ArrayList<Integer> solution, int k){
+	public ArrayList<Integer> localsearch(ArrayList<Integer> solution, int k, Queue<ArrayList<Integer>> cola){
 		ArrayList<Integer> best_solution;
 		ArrayList<ArrayList<Integer>> neighbour = new ArrayList<ArrayList<Integer>>();
 		best_solution = new ArrayList<Integer>(solution);
-		neighbour.add(new ArrayList<Integer>(solution));
 		for(int i = 0; i < this.getN_nodes(); i++) {
 			ArrayList<Integer> aux = new ArrayList<Integer>(solution);
 			if(aux.get(i) == 1) {
@@ -154,7 +148,11 @@ public class Taboo {
 						aux.set(i - k, 1);
 						aux.set(i, 0);
 						if(!neighbour.contains(aux)) {
-							neighbour.add(new ArrayList<Integer>(aux));
+							ArrayList<Integer> actual_taboo = taboo_element(solution, aux);
+							if(!cola.contains(actual_taboo)){
+								neighbour.add(new ArrayList<Integer>(aux));
+							}
+							
 							
 						}
 						aux.set(i - k, 0);
@@ -166,7 +164,10 @@ public class Taboo {
 						aux.set(i + k, 1);
 						aux.set(i, 0);
 						if(!neighbour.contains(aux)) {
-							neighbour.add(new ArrayList<Integer>(aux));
+							ArrayList<Integer> actual_taboo = taboo_element(solution,aux);
+							if(!cola.contains(actual_taboo)){
+								neighbour.add(new ArrayList<Integer>(aux));
+							}
 							
 						}
 						aux.set(i + k, 0);
@@ -185,6 +186,8 @@ public class Taboo {
 				best_solution = new ArrayList<Integer>(neighbour.get(i));
 			}
 		}
+		ArrayList<Integer> actual_taboo = taboo_element(solution,best_solution);
+		cola.add(actual_taboo);
 		
 		return best_solution;
 	}

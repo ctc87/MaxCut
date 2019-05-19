@@ -17,7 +17,13 @@ public class App {
 	static int file_local = 1;
 	static String  actual_alg = "VNS";
 	static int k = 100;
+	static int k_neightbor = 100;
 	static int candiatatSize = 1000;
+	static int maxIterNotImprved = 1000;
+	static int cola = 100;
+	static int timeout = 10;
+	static ArrayList<Integer> solution;
+	
 	
 	
 	static void menu() {
@@ -85,7 +91,7 @@ public class App {
         	
             System.out.println("\nSelecciona el algoritmo a ejecutar.");
             System.out.println("\n1.GRASP.");
-            System.out.println("2. VNS.");
+            System.out.println("2. GVNS.");
             System.out.println("3. VND.");
             System.out.println("4. BVNS.");
             System.out.println("5. MULTI ARRANQUE.");
@@ -132,6 +138,8 @@ public class App {
         }
 	}
 	
+	// ------------------GRASP---------------------------
+	
 	public static void graspMenu()  {
 		Scanner sn = new Scanner(System.in);
         boolean salir = false;
@@ -146,19 +154,22 @@ public class App {
  
             try {
  
-                System.out.println("Write one option.");
+                System.out.println("Escribe una opcion.");
                 opcion = sn.nextInt();
                 switch (opcion) {
-                    case 2:
-                		sn = new Scanner(System.in);
-                		System.out.println("Write the name of the file 'file.ext' to read K-means instance, and press enter.\n");
-                        
                     case 1:
                 		sn = new Scanner(System.in);
-                		System.out.println("Write the number of K parameter, and press enter.\n");
+                		System.out.println("Escribe el numero de veces a ejecutar el algoritmo.\n");
+                		candiatatSize = sn.nextInt();
+                        
+                    case 2:
+                		sn = new Scanner(System.in);
+                		System.out.println("Escribe el tamaño de la lista de candidatos.\n");
+                		k = sn.nextInt();
                       
                         break;
                     case 3:
+                		System.out.println("Ejecutando...\n");
                     	Timer.start();
                     	executeGrasp();
                         System.out.println("Time:" + Timer.stop());
@@ -187,5 +198,341 @@ public class App {
 		ArrayList<Integer> solution = g.execute();
 		System.out.println(g.function(solution) + " --- " + solution);
 	}
+	
+	// ------------------GVNS---------------------------
+
+	public static void gvnsMenu()  {
+		Scanner sn = new Scanner(System.in);
+        boolean salir = false;
+        int opcion; //Guardaremos la opcion del usuario
+        while (!salir) {
+        	
+            System.out.println("\nSelecciona una opción.");
+            System.out.println("\n1.Cambiar el númerto de veces a jecutar el algoritmo  (" + k + " actualmente.)" );
+            System.out.println("2. Cambiar el tamaño máximo del vencinadario (" + k_neightbor + " actualmente.)");
+            System.out.println("3. Ejecutar GVNS con los anteriores parámetros.");
+            System.out.println("4. Volver al menu principal.");
+ 
+            try {
+ 
+                System.out.println("Escribe una opción.");
+                opcion = sn.nextInt();
+                switch (opcion) {
+	                case 1:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el numero de veces a ejecutar el algoritmo.\n");
+	            		k = sn.nextInt();
+	                    
+	                case 2:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el tamaño del vencindario de soluciones.\n");
+	            		k_neightbor = sn.nextInt();
+	                  
+	                    break;
+	                case 3:
+	            		System.out.println("Ejecutando...\n");
+	                	Timer.start();
+	                	executeGvns();
+	                    System.out.println("Time:" + Timer.stop());
+	                    break;
+	                case 4:
+	                    salir = true;
+	                    break;
+	                default:
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You migth insert number.");
+                sn.next();
+            }
+        }
+	}
+	
+	public static void executeGvns() {
+		GVNS v;
+		try {
+			v = new GVNS(constructFIle(),k_neightbor);
+			ArrayList<Integer> solution;
+			solution = v.execute(constructFIle(), k_neightbor,k);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	// ------------------VND---------------------------
+
+	public static void vndMenu()  {
+		Scanner sn = new Scanner(System.in);
+        boolean salir = false;
+        int opcion; //Guardaremos la opcion del usuario
+        while (!salir) {
+        	
+            System.out.println("\nSelecciona una opción.");
+            System.out.println("\n1 Cambiar el tamaño máximo del vencinadario (" + k_neightbor + " actualmente.)" );
+            System.out.println("2. Ejecutar VND con los anteriores parámetros.");
+            System.out.println("3. Volver al menu principal.");
+ 
+            try {
+ 
+                System.out.println("Escribe una opción.");
+                opcion = sn.nextInt();
+                switch (opcion) {
+	                case 1:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el tamaño del vencindario de soluciones.\n");
+	            		k_neightbor = sn.nextInt();
+	                    break;
+	                case 2:
+	            		System.out.println("Ejecutando...\n");
+	                	Timer.start();
+	                	executevnd();
+	                    System.out.println("Time:" + Timer.stop());
+	                    break;
+	                case 3:
+	                    salir = true;
+	                    break;
+	                default:
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You migth insert number.");
+                sn.next();
+            }
+        }
+	}
+	
+	public static void executevnd() {
+		VND v;
+		try {
+			v = new VND(constructFIle(),k_neightbor);
+			ArrayList<Integer> solution;
+			solution = v.execute(constructFIle(), k_neightbor);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+
+	
+	// ------------------BVNS---------------------------
+
+	public static void bvnsMenu()  {
+		Scanner sn = new Scanner(System.in);
+        boolean salir = false;
+        int opcion; //Guardaremos la opcion del usuario
+        while (!salir) {
+        	
+            System.out.println("\nSelecciona una opción.");
+            System.out.println("\n1.Cambiar el númerto de veces a jecutar el algoritmo  (" + k + " actualmente.)" );
+            System.out.println("2. Cambiar el tamaño máximo del vencinadario (" + k_neightbor + " actualmente.)");
+            System.out.println("3. Ejecutar BVNS con los anteriores parámetros.");
+            System.out.println("4. Volver al menu principal.");
+ 
+            try {
+                System.out.println("Escribe una opción.");
+                opcion = sn.nextInt();
+                switch (opcion) {
+	                case 1:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el numero de veces a ejecutar el algoritmo.\n");
+	            		candiatatSize = sn.nextInt();
+	                    
+	                case 2:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el tamaño del vencindario de soluciones.\n");
+	            		k = sn.nextInt();
+	                  
+	                    break;
+	                case 3:
+	            		System.out.println("Ejecutando...\n");
+	                	Timer.start();
+	                	executeBvns();
+	                    System.out.println("Time:" + Timer.stop());
+	                    break;
+	                case 4:
+	                    salir = true;
+	                    break;
+	                default:
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You migth insert number.");
+                sn.next();
+            }
+        }
+	}
+	
+	public static void executeBvns() {
+		BVNS v;
+		try {
+			 v = new BVNS(constructFIle(),k_neightbor);
+			ArrayList<Integer> solution;
+			solution = v.execute(constructFIle(), k_neightbor,k);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+
+	
+	// ------------------MULTI ARRANQUE---------------------------
+
+	public static void multiMenu() throws IOException  {
+		Scanner sn = new Scanner(System.in);
+        boolean salir = false;
+        int opcion; //Guardaremos la opcion del usuario
+        while (!salir) {
+        	
+            System.out.println("\nSelecciona una opción.");
+            System.out.println("\n1.Cambiar el númerto de veces a jecutar el algoritmo sin mejoras de solución (" + maxIterNotImprved + " actualmente.)" );
+            System.out.println("2. Ejecutar Multi Arranque con los anteriores parámetros.");
+            System.out.println("3. Volver al menu principal.");
+ 
+            try {
+                System.out.println("Escribe una opción.");
+                opcion = sn.nextInt();
+                switch (opcion) {
+	                case 1:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el numero de veces a ejecutar el algoritmo sin mejoras.\n");
+	            		maxIterNotImprved = sn.nextInt();
+	                case 2:
+	            		System.out.println("Ejecutando...\n");
+	                	Timer.start();
+	                	executeMulti();
+	                    System.out.println("Time:" + Timer.stop());
+	                    break;
+	                case 3:
+	                    salir = true;
+	                    break;
+	                default:
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You migth insert number.");
+                sn.next();
+            }
+        }
+	}
+	
+	public static void executeMulti() throws IOException {
+		solution = MultiBoot.execute(constructFIle(), maxIterNotImprved);
+	}
+	
+
+	
+	// ------------------TABOO---------------------------
+
+	public static void tabooMenu()  {
+		Scanner sn = new Scanner(System.in);
+        boolean salir = false;
+        int opcion; //Guardaremos la opcion del usuario
+        while (!salir) {
+        	
+            System.out.println("\nSelecciona una opción.");
+            System.out.println("\n1.Cambiar el númerto de veces a jecutar el algoritmo  (" + k + " actualmente.)" );
+            System.out.println("2. Cambiar el tamaño máximo del vencinadario (" + k_neightbor + " actualmente.)");
+            System.out.println("3. Ejecutar TABOO con los anteriores parámetros.");
+            System.out.println("4. Volver al menu principal.");
+ 
+            try {
+                System.out.println("Escribe una opción.");
+                opcion = sn.nextInt();
+                switch (opcion) {
+                	case 1:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el tamaño de la cola del algoritmo. actual(" + cola + ").");
+	            		cola = sn.nextInt();
+                    break;
+                	case 2:
+	            		sn = new Scanner(System.in);
+	            		System.out.println("Escribe el timeout del algoritmo. actual(" + timeout + "). ");
+	            		timeout = sn.nextInt();
+                    break;
+	                case 3:
+	            		System.out.println("Ejecutando...\n");
+	                	Timer.start();
+	                	executeTaboo();
+	                    System.out.println("Time:" + Timer.stop());
+	                    break;
+	                case 4:
+	                    salir = true;
+	                    break;
+	                default:
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You migth insert number.");
+                sn.next();
+            }
+        }
+	}
+	
+	public static void executeTaboo() {
+		try {
+			Taboo g = new Taboo(constructFIle(),cola);
+			solution = g.execute(timeout);
+			System.out.println(g.function(solution) + " --- " + solution);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+ // --------------------------DETERMINISTA---------------------------------
+
+	public static void deterMenu()  {
+		Scanner sn = new Scanner(System.in);
+        boolean salir = false;
+        int opcion; //Guardaremos la opcion del usuario
+        while (!salir) {
+        	
+            System.out.println("\nSelecciona una opción.");
+    
+            System.out.println("\1. Ejecutar Algoritmo Determinista.");
+            System.out.println("2. Volver al menu principal.");
+ 
+            try {
+                System.out.println("Escribe una opción.");
+                opcion = sn.nextInt();
+                switch (opcion) {
+	                case 1:
+	            		System.out.println("Ejecutando...\n");
+	                	Timer.start();
+	                	executeDeter();
+	                    System.out.println("Time:" + Timer.stop());
+	                    break;
+	                case 2:
+	                    salir = true;
+	                    break;
+	                default:
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("You migth insert number.");
+                sn.next();
+            }
+        }
+	}
+	
+	public static void executeDeter() {
+		try {
+			Deterministic d = new Deterministic(constructFIle());
+			ArrayList<Integer> solution;
+			try {
+				solution = d.execute();
+				System.out.println(d.function(solution) + " --- " + solution);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 
 }

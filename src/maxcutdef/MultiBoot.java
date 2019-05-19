@@ -22,17 +22,15 @@ public class MultiBoot {
 	
 	public static void main(String[] args) throws IOException {
 		
-		MultiBoot g = new MultiBoot();
-		g.execute(10);
+		MultiBoot.execute("set1/g3.rud", 10);
 		//System.out.println("FIN");
 		//ArrayList<Integer> solution2 = g.tabooSearch(10000);
 	}
 	
-	static void execute(int maxCylesNotImproved) {
+	static ArrayList<Integer> execute(String filename, int maxCylesNotImproved) {
 		Grasp grasp = null;
 		try {
-			grasp = new Grasp("set1/g11.rud",10);
-			//graph = new Graph("set1/g3.rud",10);
+			grasp = new Grasp(filename,10);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -46,8 +44,6 @@ public class MultiBoot {
 			solution = grasp.localsearch(solution, 1);
 			actualObjetiveValue = grasp.function(solution);
 			bestObjetiveValue = grasp.function(bestSolution);
-//			System.out.println( grasp.function(solution));
-//			System.out.println( grasp.function(bestSolution));
 			if(actualObjetiveValue > bestObjetiveValue ) {
 				bestSolution = new ArrayList<Integer>(solution);
 				System.out.println( grasp.function(bestSolution));
@@ -57,7 +53,7 @@ public class MultiBoot {
 			}
 			solution = grasp.execute(); 
 		}
-		System.out.println( grasp.function(bestSolution));
+		return solution;
 		
 	}
 

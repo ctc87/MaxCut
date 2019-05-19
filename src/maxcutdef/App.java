@@ -26,7 +26,7 @@ public class App {
 	
 	
 	
-	static void menu() {
+	static void menu() throws IOException {
 		  
 		Scanner sn = new Scanner(System.in);
         boolean salir = false;
@@ -83,7 +83,7 @@ public class App {
 		return SET_DITECROTY + file_local + ".rud"; 
 	}
 	
-	public static void alghMenu() {
+	public static void alghMenu() throws IOException {
 		Scanner sn = new Scanner(System.in);
         boolean salir = false;
         int opcion; //Guardaremos la opcion del usuario
@@ -95,8 +95,8 @@ public class App {
             System.out.println("3. VND.");
             System.out.println("4. BVNS.");
             System.out.println("5. MULTI ARRANQUE.");
-            System.out.println("6. DETERMINISTA.");
-            System.out.println("7.TABOO.");
+            System.out.println("6.TABOO.");
+            System.out.println("7. DETERMINISTA.");
             System.out.println("8.Volver.");
  
             try {
@@ -109,22 +109,28 @@ public class App {
                 		graspMenu();
                 		salir = true;
                     case 2:
-                		System.out.println("Sin implementar");
+                		System.out.println("GVNS seleccionado");
+                		gvnsMenu();
                         break;
                     case 3:
-                		System.out.println("Sin implementar");
+                		System.out.println("VND seleccionado");
+                		vndMenu();
                         break;
                     case 4:
-                		System.out.println("Sin implementar");
+                		System.out.println("BVNS seleccionado");
+                		bvnsMenu();
                         break;
                     case 5:
-                		System.out.println("Sin implementar");
+                		System.out.println("Multi arranque seleccionado");
+                		multiMenu();
                         break;
                     case 6:
-                		System.out.println("Sin implementar");
+                		System.out.println("Taboo seleccionado");
+                		tabooMenu();
                         break;
                     case 7:
-                		System.out.println("Sin implementar");
+                		System.out.println("Determinista seleccionado");
+                		deterMenu();
                         break;
                     case 8:
                         salir = true;
